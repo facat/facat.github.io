@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="cn">
+<head>
+        <meta charset="utf-8" />
+        <title>facat' blog - ARM</title>
+        <link rel="stylesheet" href="http://facat.github.io/theme/css/main.css" />
+
+        <!--[if IE]>
+            <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+</head>
+
+<body id="index" class="home">
+        <header id="banner" class="body">
+                <h1><a href="http://facat.github.io/">facat' blog </a></h1>
+                <nav><ul>
+                    <li><a href="http://facat.github.io/category/bian-cheng-programming.html">编程Programming</a></li>
+                    <li><a href="http://facat.github.io/category/bian-yi.html">编译</a></li>
+                    <li><a href="http://facat.github.io/category/bian-yi-compile.html">编译Compile</a></li>
+                    <li><a href="http://facat.github.io/category/sui-yi.html">随意</a></li>
+                    <li><a href="http://facat.github.io/category/tech.html">Tech</a></li>
+                </ul></nav>
+        </header><!-- /#banner -->
+
+            <aside id="featured" class="body">
+                <article>
+                    <h1 class="entry-title"><a href="http://facat.github.io/cross-compile-mongodb-for-arm.html">Cross Compile MongoDB for ARM</a></h1>
+<footer class="post-info">
+        <abbr class="published" title="2014-07-21T10:29:59.818874">
+                2014-07-21</br>10:29:59
+        </abbr>
+
+        <address class="vcard author" style="font-style: normal;">
+                作者： <a class="url fn" href="http://facat.github.io/author/facat.html">facat</a>
+        </address>
+<p>分类： <a href="http://facat.github.io/category/bian-yi-compile.html">编译Compile</a>. </p>
+<p>Tags: <a href="http://facat.github.io/tag/arm.html">ARM</a><a href="http://facat.github.io/tag/cubieboard.html">Cubieboard</a><a href="http://facat.github.io/tag/cross-compile.html">Cross-compile</a><a href="http://facat.github.io/tag/mongodb.html">MongoDB</a></p>
+</footer><!-- /.post-info --><p><a href="http://www.mongodb.org/">MongoDB</a> is an document-oriented nosql server. Currently  MongoDB(latest verstion 2.6.3) doesn't support ARM.
+I have a cubieboard, which is an arm-based mini pc. I want MongoDB to run on my cubieboard. Unfortunately, debian wheezy doesn't provide MongoDB package. I have to compile it myself. I tried to compile it ON my cubieboard, but compilation time was too long and at the end cubieboard didn't have enough time to generate mongod executable.  My only choice is to cross-compile it and that's all what this blog is about.</p>
+<h1>Requirement</h1>
+<p>Before hand, you have to set up a building environment. For me, I installed 32bit <a href="www.linuxmint.com/">linux mint</a> in a virtual machine and did all job on mint. A cross-compile suite is needed. This can be obtained from <a href="https://launchpad.net/linaro-toolchain-binaries">linaro gcc toolchain</a>. Download its binary build and extract it. Add the path of its bin directory to PATH for mint to find it.</p>
+<p>Also you need SCons, a software construction tool. On a debian-based linux, e.g mint, you can acquire it easily by</p>
+<div class="highlight"><pre><span class="n">sudo</span> <span class="n">apt</span><span class="o">-</span><span class="n">get</span> <span class="n">install</span> <span class="n">scons</span>
+</pre></div>
+
+
+<h1>Building</h1>
+<p>First, download source code from MongoDB's <a href="http://www.mongodb.org/downloads">website</a> and extract it to anywhere you like. I will use DIR_TOP to indicate the top-level directory of MongoDB source code.</p>
+<p>Before starting to compile, a few modifications have to be made on MongoDB source.</p>
+<p>Find DIR_TOP/src/third_party/v8/src/ia32/cpu-ia32.cc
+Look up for a line that says '</p>
+<div class="highlight"><pre><span class="n">asm</span><span class="p">(</span><span class="s">&quot;int $3&quot;</span><span class="p">);</span>
+</pre></div>
+
+
+<p>Comment it, so this line should look like</p>
+<div class="highlight"><pre><span class="c1">//asm(&quot;int $3&quot;);</span>
+</pre></div>
+
+
+<p>According to its code context, this may be related to debugging. We don't need to debug it. It's ok to disable it.</p>
+<p>Then find DIR_TOP/src/third_party/v8/src/globals.h
+Look up for a code block</p>
+<div class="highlight"><pre><span class="c1">// Check for supported combinations of host and target architectures.</span>
+<span class="p">#</span><span class="k">if</span> <span class="n">defined</span><span class="p">(</span><span class="no">V8_TARGET_ARCH_IA32</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="n">defined</span><span class="p">(</span><span class="no">V8_HOST_ARCH_IA32</span><span class="p">)</span>
+<span class="p">#</span><span class="n">error</span> <span class="n">Target</span> <span class="n">architecture</span> <span class="n">ia32</span> <span class="n">is</span> <span class="n">only</span> <span class="n">supported</span> <span class="n">on</span> <span class="n">ia32</span> <span class="n">host</span>
+<span class="p">#</span><span class="n">endif</span>
+</pre></div>
+
+
+<p>Comment the #error to disable it. The code should be like this</p>
+<div class="highlight"><pre><span class="c1">// Check for supported combinations of host and target architectures.</span>
+<span class="p">#</span><span class="k">if</span> <span class="n">defined</span><span class="p">(</span><span class="no">V8_TARGET_ARCH_IA32</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="n">defined</span><span class="p">(</span><span class="no">V8_HOST_ARCH_IA32</span><span class="p">)</span>
+<span class="c1">//#error Target architecture ia32 is only supported on ia32 host</span>
+<span class="p">#</span><span class="n">endif</span>
+</pre></div>
+
+
+<p>That's all for modification.</p>
+<p>One more thing to do is to tell scons to use linux enviroment variable, such as PATH, CXXFLAGS, etc. This is important if your cross compiler is not in linux executable search path(/bin, /usr/bin, etc). To do this, you have to append --propagate-shell-environment to scons.</p>
+<p>Finally, use</p>
+<div class="highlight"><pre><span class="n">scons</span> <span class="o">--</span><span class="n">propagate</span><span class="o">-</span><span class="n">shell</span><span class="o">-</span><span class="n">environment</span> <span class="o">--</span><span class="n">cc</span><span class="o">=</span><span class="n">arm</span><span class="o">-</span><span class="n">linux</span><span class="o">-</span><span class="n">gnueabihf</span><span class="o">-</span><span class="n">gcc</span> <span class="o">--</span><span class="n">cxx</span><span class="o">=</span><span class="n">arm</span><span class="o">-</span><span class="n">linux</span><span class="o">-</span><span class="n">gnueabihf</span><span class="o">-</span><span class="n">g</span><span class="o">++</span> <span class="o">--</span><span class="n">full</span> <span class="n">install</span> <span class="o">--</span><span class="n">prefix</span><span class="o">=</span><span class="n">INSTALL_DIR</span>
+</pre></div>
+
+
+<p>to compile and install MongoDB.</p>
+<p>INSTALL_DIR is where you put your MongoDB build.
+--cc tells scons to use a c language compiler you provide. --cxx tells scons to use a c++ compiler. arm-linux-gnueabihf-gcc is the cross-compile gcc shipped with linaro gcc toolchain. arm-linux-gnueabihf-g++ is for g++. Names of these two executables may vary depending on the toolchain you use.</p>
+<h1>Binary Provided</h1>
+<p>I have compiled MongoDB 2.6.3 for ARM. You can <a href="http://facat.github.io/mongodb-2.6.4-arm.7z">DOWNLOAD</a> it.</p>
+<h1>Note</h1>
+<p>Although all executable of MongDB is built, mongo can not be executed.</p>
+<p>mongo is a command client used to interact with mongod server.</p>
+<p>I have tested all other executables. They are ok. When you execute mongo, it says</p>
+<div class="highlight"><pre><span class="n">ERROR</span><span class="o">:</span> <span class="n">Binary</span> <span class="n">compiled</span> <span class="k">with</span> <span class="o">-</span><span class="n">mfloat</span><span class="o">-</span><span class="n">abi</span><span class="o">=</span><span class="n">hard</span> <span class="n">but</span> <span class="n">without</span> <span class="o">-</span><span class="n">DUSE_EABI_HARDFLOAT</span>
+</pre></div>
+
+
+<p>Even I recompile it with -DUSE_EABI_HARDFLOAT, when executed it says</p>
+<div class="highlight"><pre><span class="n">Segmentation</span> <span class="n">fault</span>
+</pre></div>
+
+
+<p>I don't know if this is caused by a bug or it's a compatibility issue because of unoffical support for ARM from MongoDB. However, this isn't a problem, because we have many client alternatives(MongoVUE, Rockmongo, e.t. ).</p>
+<p>Enjoy your MongoDB.</p><p>There are <a href="http://facat.github.io/cross-compile-mongodb-for-arm.html#disqus_thread">comments</a>.</p>                </article>
+<p class="paginator">
+    页 1 / 1
+</p>
+            </aside><!-- /#featured -->
+            </ol><!-- /#posts-list -->
+            </section><!-- /#content -->
+        <section id="extras" class="body">
+        </section><!-- /#extras -->
+
+        <footer id="contentinfo" class="body">
+                <address id="about" class="vcard body">
+                Proudly powered by <a href="http://getpelican.com/">Pelican</a>, which takes great advantage of <a href="http://python.org">Python</a>.
+                </address><!-- /#about -->
+
+                <p>The theme is by <a href="http://coding.smashingmagazine.com/2009/08/04/designing-a-html-5-layout-from-scratch/">Smashing Magazine</a>, thanks!</p>
+        </footer><!-- /#contentinfo -->
+
+
+<script type="text/javascript">
+var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3Fc7b9776918503e35c2b2ac6519de4dde' type='text/javascript'%3E%3C/script%3E"));
+</script><script type="text/javascript">
+"use strict";
+    var disqus_shortname = 'facat';
+    (function () {
+        var s = document.createElement('script'); s.async = true;
+        s.type = 'text/javascript';
+        s.src = 'http://' + disqus_shortname + '.disqus.com/count.js';
+        (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+    }());
+</script>
+</body>
+</html>

@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom"><title>facat' blog</title><link href="http://facat.github.io/" rel="alternate"></link><link href="http://facat.github.io/feeds/facat.atom.xml" rel="self"></link><id>http://facat.github.io/</id><updated>2014-08-12T11:48:21+08:00</updated><entry><title>A PHP based Reverse Proxy</title><link href="http://facat.github.io/a-php-based-reverse-proxy.html" rel="alternate"></link><updated>2014-08-12T11:48:21+08:00</updated><author><name>facat</name></author><id>tag:facat.github.io,2014-08-12:a-php-based-reverse-proxy.html</id><summary type="html">&lt;p&gt;You can visit &lt;a href="http://en.wikipedia.org/wiki/Reverse_proxy"&gt;wikipedia&lt;/a&gt; to find out what a reverse proxy is.&lt;/p&gt;
+&lt;p&gt;Here's quote:&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;In computer networks, a reverse proxy is a type of proxy server that retrieves resources on behalf of a client from one or more servers. These resources are then returned to the client as though they originated from the server itself (or servers themselves).[1] While a forward proxy acts as an intermediary for its (usually nearby) associated clients and returns to them resources accessible on the Internet, a reverse proxy acts as an intermediary for its (usually nearby) associated servers and only returns resources provided by those associated servers.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;I have a Cubieboad in my dorm. It uses ADLS to access Internet. However, that ADSL provider is not satisfactory. Somewhere in the world cannot access to my Cubieboard. I have to use reverse proxy. I tried a few cloud engine platfrom. Baidu App Engine is a good choose. It supports Java, Python, Nodejs and PHP. Then I rewrite a PHP script to work as a reverse proxoy.&lt;/p&gt;
+&lt;p&gt;Source is open in &lt;a href="https://github.com/facat/phpreverseproxy"&gt;my Github&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;By the way, now you can visit my blog on Cubiebaord by &lt;a href="http://facatcool.duapp.com/blog"&gt;http://facatcool.duapp.com/blog&lt;/a&gt; .&lt;/p&gt;</summary><category term="Github"></category><category term="BAE"></category></entry><entry><title>开始接触golang</title><link href="http://facat.github.io/kai-shi-jie-hong-golang.html" rel="alternate"></link><updated>2014-07-27T00:45:45+08:00</updated><author><name>facat</name></author><id>tag:facat.github.io,2014-07-27:kai-shi-jie-hong-golang.html</id><summary type="html">&lt;p&gt;最近听说go比较多，也开始学习go了。只现在已经基本入门了，这多亏了go的语法比较简单。用了一些，开始喜欢上这个语言了。&lt;/p&gt;
+&lt;p&gt;喜欢上go有两个原因，一是它的干爹是google，技术支持没得说。二是因为它编译的时字节文件，和C语言编译的一样，而且几乎可以互相调用。据说
+go是21世纪的C语言，希望如此吧。我也觉得C太过简单，C++又太复杂，很多功能都用不上，编写调试都头大。&lt;/p&gt;</summary><category term="go"></category><category term="golang"></category></entry><entry><title>Cross Compile MongoDB for ARM</title><link href="http://facat.github.io/cross-compile-mongodb-for-arm.html" rel="alternate"></link><updated>2014-07-21T10:29:59+08:00</updated><author><name>facat</name></author><id>tag:facat.github.io,2014-07-21:cross-compile-mongodb-for-arm.html</id><summary type="html">&lt;p&gt;&lt;a href="http://www.mongodb.org/"&gt;MongoDB&lt;/a&gt; is an document-oriented nosql server. Currently  MongoDB(latest verstion 2.6.3) doesn't support ARM.
+I have a cubieboard, which is an arm-based mini pc. I want MongoDB to run on my cubieboard. Unfortunately, debian wheezy doesn't provide MongoDB package. I have to compile it myself. I tried to compile it ON my cubieboard, but compilation time was too long and at the end cubieboard didn't have enough time to generate mongod executable.  My only choice is to cross-compile it and that's all what this blog is about.&lt;/p&gt;
+&lt;h1&gt;Requirement&lt;/h1&gt;
+&lt;p&gt;Before hand, you have to set up a building environment. For me, I installed 32bit &lt;a href="www.linuxmint.com/"&gt;linux mint&lt;/a&gt; in a virtual machine and did all job on mint. A cross-compile suite is needed. This can be obtained from &lt;a href="https://launchpad.net/linaro-toolchain-binaries"&gt;linaro gcc toolchain&lt;/a&gt;. Download its binary build and extract it. Add the path of its bin directory to PATH for mint to find it.&lt;/p&gt;
+&lt;p&gt;Also you need SCons, a software construction tool. On a debian-based linux, e.g mint, you can acquire it easily by&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="n"&gt;sudo&lt;/span&gt; &lt;span class="n"&gt;apt&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;get&lt;/span&gt; &lt;span class="n"&gt;install&lt;/span&gt; &lt;span class="n"&gt;scons&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;h1&gt;Building&lt;/h1&gt;
+&lt;p&gt;First, download source code from MongoDB's &lt;a href="http://www.mongodb.org/downloads"&gt;website&lt;/a&gt; and extract it to anywhere you like. I will use DIR_TOP to indicate the top-level directory of MongoDB source code.&lt;/p&gt;
+&lt;p&gt;Before starting to compile, a few modifications have to be made on MongoDB source.&lt;/p&gt;
+&lt;p&gt;Find DIR_TOP/src/third_party/v8/src/ia32/cpu-ia32.cc
+Look up for a line that says '&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="n"&gt;asm&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;int $3&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Comment it, so this line should look like&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="c1"&gt;//asm(&amp;quot;int $3&amp;quot;);&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;According to its code context, this may be related to debugging. We don't need to debug it. It's ok to disable it.&lt;/p&gt;
+&lt;p&gt;Then find DIR_TOP/src/third_party/v8/src/globals.h
+Look up for a code block&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="c1"&gt;// Check for supported combinations of host and target architectures.&lt;/span&gt;
+&lt;span class="p"&gt;#&lt;/span&gt;&lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="n"&gt;defined&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="no"&gt;V8_TARGET_ARCH_IA32&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="o"&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span class="o"&gt;!&lt;/span&gt;&lt;span class="n"&gt;defined&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="no"&gt;V8_HOST_ARCH_IA32&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="p"&gt;#&lt;/span&gt;&lt;span class="n"&gt;error&lt;/span&gt; &lt;span class="n"&gt;Target&lt;/span&gt; &lt;span class="n"&gt;architecture&lt;/span&gt; &lt;span class="n"&gt;ia32&lt;/span&gt; &lt;span class="n"&gt;is&lt;/span&gt; &lt;span class="n"&gt;only&lt;/span&gt; &lt;span class="n"&gt;supported&lt;/span&gt; &lt;span class="n"&gt;on&lt;/span&gt; &lt;span class="n"&gt;ia32&lt;/span&gt; &lt;span class="n"&gt;host&lt;/span&gt;
+&lt;span class="p"&gt;#&lt;/span&gt;&lt;span class="n"&gt;endif&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Comment the #error to disable it. The code should be like this&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="c1"&gt;// Check for supported combinations of host and target architectures.&lt;/span&gt;
+&lt;span class="p"&gt;#&lt;/span&gt;&lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="n"&gt;defined&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="no"&gt;V8_TARGET_ARCH_IA32&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="o"&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span class="o"&gt;!&lt;/span&gt;&lt;span class="n"&gt;defined&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="no"&gt;V8_HOST_ARCH_IA32&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="c1"&gt;//#error Target architecture ia32 is only supported on ia32 host&lt;/span&gt;
+&lt;span class="p"&gt;#&lt;/span&gt;&lt;span class="n"&gt;endif&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;That's all for modification.&lt;/p&gt;
+&lt;p&gt;One more thing to do is to tell scons to use linux enviroment variable, such as PATH, CXXFLAGS, etc. This is important if your cross compiler is not in linux executable search path(/bin, /usr/bin, etc). To do this, you have to append --propagate-shell-environment to scons.&lt;/p&gt;
+&lt;p&gt;Finally, use&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="n"&gt;scons&lt;/span&gt; &lt;span class="o"&gt;--&lt;/span&gt;&lt;span class="n"&gt;propagate&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;shell&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;environment&lt;/span&gt; &lt;span class="o"&gt;--&lt;/span&gt;&lt;span class="n"&gt;cc&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;arm&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;linux&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;gnueabihf&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;gcc&lt;/span&gt; &lt;span class="o"&gt;--&lt;/span&gt;&lt;span class="n"&gt;cxx&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;arm&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;linux&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;gnueabihf&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;g&lt;/span&gt;&lt;span class="o"&gt;++&lt;/span&gt; &lt;span class="o"&gt;--&lt;/span&gt;&lt;span class="n"&gt;full&lt;/span&gt; &lt;span class="n"&gt;install&lt;/span&gt; &lt;span class="o"&gt;--&lt;/span&gt;&lt;span class="n"&gt;prefix&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;INSTALL_DIR&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;to compile and install MongoDB.&lt;/p&gt;
+&lt;p&gt;INSTALL_DIR is where you put your MongoDB build.
+--cc tells scons to use a c language compiler you provide. --cxx tells scons to use a c++ compiler. arm-linux-gnueabihf-gcc is the cross-compile gcc shipped with linaro gcc toolchain. arm-linux-gnueabihf-g++ is for g++. Names of these two executables may vary depending on the toolchain you use.&lt;/p&gt;
+&lt;h1&gt;Binary Provided&lt;/h1&gt;
+&lt;p&gt;I have compiled MongoDB 2.6.3 for ARM. You can &lt;a href="http://facat.github.io/mongodb-2.6.4-arm.7z"&gt;DOWNLOAD&lt;/a&gt; it.&lt;/p&gt;
+&lt;h1&gt;Note&lt;/h1&gt;
+&lt;p&gt;Although all executable of MongDB is built, mongo can not be executed.&lt;/p&gt;
+&lt;p&gt;mongo is a command client used to interact with mongod server.&lt;/p&gt;
+&lt;p&gt;I have tested all other executables. They are ok. When you execute mongo, it says&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="n"&gt;ERROR&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="n"&gt;Binary&lt;/span&gt; &lt;span class="n"&gt;compiled&lt;/span&gt; &lt;span class="k"&gt;with&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;mfloat&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;abi&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;hard&lt;/span&gt; &lt;span class="n"&gt;but&lt;/span&gt; &lt;span class="n"&gt;without&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;DUSE_EABI_HARDFLOAT&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Even I recompile it with -DUSE_EABI_HARDFLOAT, when executed it says&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="n"&gt;Segmentation&lt;/span&gt; &lt;span class="n"&gt;fault&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;I don't know if this is caused by a bug or it's a compatibility issue because of unoffical support for ARM from MongoDB. However, this isn't a problem, because we have many client alternatives(MongoVUE, Rockmongo, e.t. ).&lt;/p&gt;
+&lt;p&gt;Enjoy your MongoDB.&lt;/p&gt;</summary><category term="ARM"></category><category term="Cubieboard"></category><category term="Cross-compile"></category><category term="MongoDB"></category></entry><entry><title>如何在Ubuntu 14.04 中使用Ipopt</title><link href="http://facat.github.io/ru-he-zai-ubuntu-1404-zhong-shi-yong-ipopt.html" rel="alternate"></link><updated>2014-07-20T00:36:57+08:00</updated><author><name>facat</name></author><id>tag:facat.github.io,2014-07-20:ru-he-zai-ubuntu-1404-zhong-shi-yong-ipopt.html</id><summary type="html">&lt;p&gt;以前只在Windows平台下编译过，还写了文章做记录放在CSDN上，不过已经被封，不管了。&lt;/p&gt;
+&lt;p&gt;Ipopt毕竟是开源软件，在Linux下编译还是比较方便的。进入contrib/MatlatInterface/src 看到Makefile后make就可以了。不过好像有个小bug，就是在脚本自动链接的时候提示找不到matlabexception.o 之类的库文件。出的进入src下的.lib 文件夹，执行&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="n"&gt;cp&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt; &lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="p"&gt;..&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;把所有编译好的.o文件拷出来，然后在make就可以正常链接了。&lt;/p&gt;
+&lt;p&gt;把得到的mex文件路径加入到matlab中。此时在matlab中仍不能用，因为matlab自带的库太老了，要用系统的库替换。&lt;/p&gt;
+&lt;p&gt;我是64位的Ubuntu Kylin，把/usr/lib/x86_64-linux-gnu/下的libgcc_s.so.1 libstdc++.so.6 libgfortran.so.3 链接到matlab安装目录的/sys/os/glnxa64文件夹下。最好之前备份一下matlab的原文件。这样就能用了。&lt;/p&gt;
+&lt;hr /&gt;
+&lt;p&gt;2014.06.06&lt;/p&gt;
+&lt;p&gt;似乎&lt;a href="http://list.coin-or.org/pipermail/ipopt/2014-May/003690.html"&gt;这里&lt;/a&gt;给出了原因。&lt;/p&gt;
+&lt;hr /&gt;
+&lt;p&gt;2014.06.06&lt;/p&gt;
+&lt;p&gt;不知道为什么我编译的接口在matlab中调用的时候会出现segment fault。我从Ipopt官网上下载编译好的接口却没有问题。&lt;/p&gt;</summary><category term="Ubuntu"></category><category term="GCC"></category><category term="Matlab"></category><category term="Ipopt"></category></entry><entry><title>为什么把Blog迁移到Github</title><link href="http://facat.github.io/wei-shi-yao-ba-blogqian-yi-dao-github.html" rel="alternate"></link><updated>2014-06-01T10:20:00+08:00</updated><author><name>facat</name></author><id>tag:facat.github.io,2014-06-01:wei-shi-yao-ba-blogqian-yi-dao-github.html</id><summary type="html">&lt;p&gt;之前在CSDN上写了一些关于编译某些开源库的文章，只是为了怕自己忘记所以才写在上面的。发布后很长一段时间都不会上去看，只有用到的时候才看一下。最近发现我在CSDN上面的博客被管理员关闭了，貌似是因为有人盗用了我CSDN的号发表了一些不和谐的东西。我的电脑都没有中过毒，居然还被盗密码了，真是匪夷所思。后来我想了一下，可能和之前CSDN密码被泄露有关。算了，国内的博客网站虽然访问速度快，但太容易被和谐了，还是玩玩美帝的东西吧。&lt;/p&gt;</summary><category term="Github"></category></entry></feed>
