@@ -24,7 +24,48 @@
 
             <aside id="featured" class="body">
                 <article>
-                    <h1 class="entry-title"><a href="http://facat.github.io/a-php-based-reverse-proxy.html">A PHP based Reverse Proxy</a></h1>
+                    <h1 class="entry-title"><a href="http://facat.github.io/fix-too-many-connections-in-golang.html">Fix "Too Many Connections" in Golang</a></h1>
+<footer class="post-info">
+        <abbr class="published" title="2014-08-17T00:50:35.309203">
+                2014-08-17</br>00:50:35
+        </abbr>
+
+        <address class="vcard author" style="font-style: normal;">
+                作者： <a class="url fn" href="http://facat.github.io/author/facat.html">facat</a>
+        </address>
+<p>分类： <a href="http://facat.github.io/category/bian-cheng-programming.html">编程Programming</a>. </p>
+<p>Tags: <a href="http://facat.github.io/tag/go.html">go</a><a href="http://facat.github.io/tag/golang.html">golang</a><a href="http://facat.github.io/tag/mysql.html">Mysql</a></p>
+</footer><!-- /.post-info --><p>Sometimes people may come into <strong><em>Too Many Connections</em></strong> error when using Mysql in Golang. A few things should be noted to avoid this error.</p>
+<ol>
+<li>
+<p>Remember to use DB.COMMIT() if transaction is used. Connections to Mysql are released only if the transaction is commited. As far as I concern, DB.Exec doesn't have this problem.</p>
+</li>
+<li>
+<p>Use Row.Close() after you do a query.</p>
+</li>
+</ol>
+<p>For example:</p>
+<div class="highlight"><pre><span class="n">row</span><span class="p">,</span> <span class="n">err</span> <span class="o">:=</span> <span class="n">db</span><span class="p">.</span><span class="n">Query</span><span class="p">(</span><span class="s">&quot;select a from b limit 1&quot;</span><span class="p">)</span>
+<span class="k">if</span> <span class="n">row</span> <span class="o">!=</span> <span class="n">nil</span> <span class="p">{</span>
+    <span class="n">defer</span> <span class="n">row</span><span class="p">.</span><span class="n">Close</span><span class="p">()</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>row.Close() is very important, otherwise Golang will keep that connection.</p><p>There are <a href="http://facat.github.io/fix-too-many-connections-in-golang.html#disqus_thread">comments</a>.</p>                </article>
+            </aside><!-- /#featured -->
+                <section id="content" class="body">
+                    <h1>Other articles</h1>
+                    <hr />
+                    <ol id="posts-list" class="hfeed">
+
+            <li><article class="hentry">
+                <header>
+                    <h1><a href="http://facat.github.io/a-php-based-reverse-proxy.html" rel="bookmark"
+                           title="Permalink to A PHP based Reverse Proxy">A PHP based Reverse Proxy</a></h1>
+                </header>
+
+                <div class="entry-content">
 <footer class="post-info">
         <abbr class="published" title="2014-08-12T11:48:21">
                 2014-08-12</br>11:48:21
@@ -35,19 +76,13 @@
         </address>
 <p>分类： <a href="http://facat.github.io/category/tech.html">Tech</a>. </p>
 <p>Tags: <a href="http://facat.github.io/tag/github.html">Github</a><a href="http://facat.github.io/tag/bae.html">BAE</a></p>
-</footer><!-- /.post-info --><p>You can visit <a href="http://en.wikipedia.org/wiki/Reverse_proxy">wikipedia</a> to find out what a reverse proxy is.</p>
+</footer><!-- /.post-info -->                <p>You can visit <a href="http://en.wikipedia.org/wiki/Reverse_proxy">wikipedia</a> to find out what a reverse proxy is.</p>
 <p>Here's quote:</p>
 <blockquote>
-<p>In computer networks, a reverse proxy is a type of proxy server that retrieves resources on behalf of a client from one or more servers. These resources are then returned to the client as though they originated from the server itself (or servers themselves).[1] While a forward proxy acts as an intermediary for its (usually nearby) associated clients and returns to them resources accessible on the Internet, a reverse proxy acts as an intermediary for its (usually nearby) associated servers and only returns resources provided by those associated servers.</p>
-</blockquote>
-<p>I have a Cubieboad in my dorm. It uses ADLS to access Internet. However, that ADSL provider is not satisfactory. Somewhere in the world cannot access to my Cubieboard. I have to use reverse proxy. I tried a few cloud engine platfrom. Baidu App Engine is a good choose. It supports Java, Python, Nodejs and PHP. Then I rewrite a PHP script to work as a reverse proxoy.</p>
-<p>Source is open in <a href="https://github.com/facat/phpreverseproxy">my Github</a>.</p>
-<p>By the way, now you can visit my blog on Cubiebaord by <a href="http://facatcool.duapp.com/blog">http://facatcool.duapp.com/blog</a> .</p><p>There are <a href="http://facat.github.io/a-php-based-reverse-proxy.html#disqus_thread">comments</a>.</p>                </article>
-            </aside><!-- /#featured -->
-                <section id="content" class="body">
-                    <h1>Other articles</h1>
-                    <hr />
-                    <ol id="posts-list" class="hfeed">
+<p>In computer networks, a reverse proxy is a type of proxy server that retrieves resources on behalf of a client from one or more servers. These resources are then returned to the client as though ...</p></blockquote>
+                <a class="readmore" href="http://facat.github.io/a-php-based-reverse-proxy.html">read more</a>
+<p>There are <a href="http://facat.github.io/a-php-based-reverse-proxy.html#disqus_thread">comments</a>.</p>                </div><!-- /.entry-content -->
+            </article></li>
 
             <li><article class="hentry">
                 <header>

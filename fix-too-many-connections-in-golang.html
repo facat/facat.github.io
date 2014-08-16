@@ -2,7 +2,7 @@
 <html lang="cn">
 <head>
         <meta charset="utf-8" />
-        <title>facat' blog - 编程Programming</title>
+        <title>Fix "Too Many Connections" in Golang</title>
         <link rel="stylesheet" href="http://facat.github.io/theme/css/main.css" />
 
         <!--[if IE]>
@@ -21,10 +21,15 @@
                     <li><a href="http://facat.github.io/category/tech.html">Tech</a></li>
                 </ul></nav>
         </header><!-- /#banner -->
+<section id="content" class="body">
+  <article>
+    <header>
+      <h1 class="entry-title">
+        <a href="http://facat.github.io/fix-too-many-connections-in-golang.html" rel="bookmark"
+           title="Permalink to Fix "Too Many Connections" in Golang">Fix "Too Many Connections" in Golang</a></h1>
+    </header>
 
-            <aside id="featured" class="body">
-                <article>
-                    <h1 class="entry-title"><a href="http://facat.github.io/fix-too-many-connections-in-golang.html">Fix "Too Many Connections" in Golang</a></h1>
+    <div class="entry-content">
 <footer class="post-info">
         <abbr class="published" title="2014-08-17T00:50:35.309203">
                 2014-08-17</br>00:50:35
@@ -35,7 +40,7 @@
         </address>
 <p>分类： <a href="http://facat.github.io/category/bian-cheng-programming.html">编程Programming</a>. </p>
 <p>Tags: <a href="http://facat.github.io/tag/go.html">go</a><a href="http://facat.github.io/tag/golang.html">golang</a><a href="http://facat.github.io/tag/mysql.html">Mysql</a></p>
-</footer><!-- /.post-info --><p>Sometimes people may come into <strong><em>Too Many Connections</em></strong> error when using Mysql in Golang. A few things should be noted to avoid this error.</p>
+</footer><!-- /.post-info -->      <p>Sometimes people may come into <strong><em>Too Many Connections</em></strong> error when using Mysql in Golang. A few things should be noted to avoid this error.</p>
 <ol>
 <li>
 <p>Remember to use DB.COMMIT() if transaction is used. Connections to Mysql are released only if the transaction is commited. As far as I concern, DB.Exec doesn't have this problem.</p>
@@ -52,41 +57,27 @@
 </pre></div>
 
 
-<p>row.Close() is very important, otherwise Golang will keep that connection.</p><p>There are <a href="http://facat.github.io/fix-too-many-connections-in-golang.html#disqus_thread">comments</a>.</p>                </article>
-            </aside><!-- /#featured -->
-                <section id="content" class="body">
-                    <h1>Other articles</h1>
-                    <hr />
-                    <ol id="posts-list" class="hfeed">
+<p>row.Close() is very important, otherwise Golang will keep that connection.</p>
+    </div><!-- /.entry-content -->
+    <div class="comments">
+      <!-- <h2>Comments !</h2> -->
+      <div id="disqus_thread"></div>
+      <script type="text/javascript">
+        var disqus_identifier = "fix-too-many-connections-in-golang.html";
+        var disqus_url = "http://facat.github.io/fix-too-many-connections-in-golang.html";
+        
+        (function() {
+          console.log('disqus_identifier:'+disqus_identifier);
+          console.log('disqus_url:'+disqus_url);
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = 'http://facat.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+      </script>
+    </div>
 
-            <li><article class="hentry">
-                <header>
-                    <h1><a href="http://facat.github.io/kai-shi-jie-hong-golang.html" rel="bookmark"
-                           title="Permalink to 开始接触golang">开始接触golang</a></h1>
-                </header>
-
-                <div class="entry-content">
-<footer class="post-info">
-        <abbr class="published" title="2014-07-27T00:45:45.655681">
-                2014-07-27</br>00:45:45
-        </abbr>
-
-        <address class="vcard author" style="font-style: normal;">
-                作者： <a class="url fn" href="http://facat.github.io/author/facat.html">facat</a>
-        </address>
-<p>分类： <a href="http://facat.github.io/category/bian-cheng-programming.html">编程Programming</a>. </p>
-<p>Tags: <a href="http://facat.github.io/tag/go.html">go</a><a href="http://facat.github.io/tag/golang.html">golang</a></p>
-</footer><!-- /.post-info -->                <p>最近听说go比较多，也开始学习go了。只现在已经基本入门了，这多亏了go的语法比较简单。用了一些，开始喜欢上这个语言了。</p>
-<p>喜欢上go有两个原因，一是它的干爹是google，技术支持没得说。二是因为它编译的时字节文件，和C语言编译的一样，而且几乎可以互相调用。据说
-go是21世纪的C语言，希望如此吧。我也觉得C太过简单，C++又太复杂，很多功能都用不上，编写调试都头大。</p>
-                <a class="readmore" href="http://facat.github.io/kai-shi-jie-hong-golang.html">read more</a>
-<p>There are <a href="http://facat.github.io/kai-shi-jie-hong-golang.html#disqus_thread">comments</a>.</p>                </div><!-- /.entry-content -->
-            </article></li>
-            </ol><!-- /#posts-list -->
-<p class="paginator">
-    页 1 / 1
-</p>
-            </section><!-- /#content -->
+  </article>
+</section>
         <section id="extras" class="body">
         </section><!-- /#extras -->
 
